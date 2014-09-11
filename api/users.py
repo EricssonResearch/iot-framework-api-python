@@ -2,25 +2,29 @@ import api
 
 # Variables
 # accepted_fields = ["email", "firstname", "lastname", "description", "private", "access_token", "refresh_token"]
-accepted_fields = ["email", "firstname", "lastname", "description", "private"]
+accepted_fields = ["username", "password", "email", "firstname", "lastname", "description", "private"]
 
 
 # Public API
 
-def get_users():
+def get_all():
 	return api.get("/users/")
 
-def get_user(username):
+def get(username):
 	return api.get("/users/" + username)
 
-def create_user(username, password, **fields):
-	payload = api.gen_payload(fields.items(), accepted_fields)
-	payload['username'] = username
-	payload['password'] = password
-	# return api.post("/users", payload)
+def create(data):
+	payload = api.gen_payload(data, accepted_fields)
+	# if payload['error']: return payload['error']
 	return api.authenticate(payload)
 
-def create_user_openid():
+def create(username, password, **fields):
+	data = fields.items()
+	data['username'] = username
+	data['password'] = password
+	return create(data)
+
+def create_openid():
 	url = signup_openid()
 	print url
 
@@ -32,12 +36,12 @@ def create_user_openid():
 def signup_openid():
 	return api.authenticate()
 
-def update_user(username, **fields):
+def update(username, **fields):
 	payload = api.gen_payload(fields.items(), accepted_fields)
 	payload['username'] = username
 	return api.put("/users/" + username)
 
-def delete_user(username):
+def remove(username):
 	return api.delete("/users/" + username)
 
 

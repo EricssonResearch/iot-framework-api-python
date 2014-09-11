@@ -31,6 +31,9 @@ def gen_payload(fields, accepted_fields):
 	for k, v in fields:
 		if k in accepted_fields:
 			payload[k] = v
+		# else:
+		# 	return {'error': k + " is not an accepted field"}
+		# 	throw exception
 
 	return payload
 
