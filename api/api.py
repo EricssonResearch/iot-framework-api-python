@@ -2,6 +2,7 @@ import requests, json
 from config.constants import *
 
 # Variables
+
 access_token  = ""
 refresh_token = ""
 
@@ -9,6 +10,7 @@ default_headers = {
 	'Content-Type': "application/json",
 	'Access-Token': access_token
 }
+
 
 # API Functions
 
@@ -24,18 +26,19 @@ def put(url_resource, body):
 def delete(url_resource, body={}):
 	return _make("delete", url_resource, body)
 
-def gen_payload(fields, accepted_fields):
-	payload = {}
 
-	# TODO Be careful with nested fields
-	for k, v in fields:
-		if k in accepted_fields:
-			payload[k] = v
-		# else:
-		# 	return {'error': k + " is not an accepted field"}
-		# 	throw exception
+# Custom API Functions
 
-	return payload
+def semantics_get(url):
+	res  = get(url)
+	data = res.json()
+	file = open(SEMANTICS_FILE, 'w')
+	file.write(data)
+	file.close()
+	return data
+
+
+# Authentication and Users Creation
 
 def authenticate():
 	return requests.post(API_URL + "/users/_auth/")
@@ -56,13 +59,21 @@ def renew_tokens(access_token, refresh_token):
 	return requests.post(url, headers=headers).json()
 	# return post(url, headers=headers)
 
-def semantics_get(url):
-	res  = get(url)
-	data = res.json()
-	file = open(SEMANTICS_FILE, 'w')
-	file.write(data)
-	file.close()
-	return data
+
+# Auxiliary Functions
+
+def gen_payload(fields, accepted_fields):
+	payload = {}
+
+	# TODO Be careful with nested fields
+	for k, v in fields:
+		if k in accepted_fields:
+			payload[k] = v
+		# else:
+		# 	return {'error': k + " is not an accepted field"}
+		# 	throw exception
+
+	return payload
 
 
 # Private Functions
@@ -80,6 +91,4 @@ def _make(method, url_resource, body={}, headers=default_headers):
 	# elif res.status_code == STATUS_AUTHORISATION_FAIL:
 	# 	# do_something
 	# print url
-	# print res.text
 	return res.json()
-
